@@ -1,0 +1,27 @@
+{
+  "name": "vort_ex",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "bin": "./dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:dev": "tsc --watch",
+    "run": "node ./dist/index.js",
+    "run:dev": "node --watch ./dist/index.js",
+    "lint": "eslint \"./src/**/*.ts\" --max-warnings=0",
+    "lint:fix": "eslint \"./src/**/*.ts\" --max-warnings=0 --fix"
+  },
+  "keywords": ["nest", "fetch", "ky"],
+  "author": "Max Zernyaev <winterzz@internet.ru>",
+  "license": "MIT",
+  "description": "Generate REST API for frontend projects from Nest controllers",
+  "dependencies": {
+    "typescript": "^5.6.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.1",
+    "eslint-kit": "^11.19.0",
+    "lefthook": "^1.7.18",
+    "prettier": "^3.3.3"
+  }
+}

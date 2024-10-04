@@ -1,0 +1,7 @@
+pre-commit:
+  parallel: false
+  piped: true
+  commands:
+    eslint:
+      stage_fixed: true
+      run: npm run lint
