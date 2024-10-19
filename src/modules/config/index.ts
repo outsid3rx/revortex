@@ -1,18 +1,15 @@
 import { join } from 'path'
-import { ErrorMessageOptions, generateErrorMessage } from 'zod-error'
+import { isStringLiteral } from 'typescript'
+import type { ErrorMessageOptions } from 'zod-error'
+import { generateErrorMessage } from 'zod-error'
 
 import { Fs } from '../fs'
 import { logger } from '../logger'
-import {
-  isCallExpression,
-  isExpressionStatement,
-  isFunctionDeclaration,
-  isPropertyAccessExpression,
-  isStringLiteral,
-  Parser,
-} from '../parser'
+import { Parser } from '../parser'
 import { DEFAULT_CONFIG_PATH, DEFAULT_MAIN_PATH } from './constants'
-import { ConfigDTO, configSchema, MainFileDTO, mainFileSchema } from './schema'
+import type { ConfigDTO, MainFileDTO } from './schema'
+import { configSchema, mainFileSchema } from './schema'
+import { findGlobalPrefixNode } from './utils'
 
 const options: ErrorMessageOptions = {
   delimiter: {
@@ -25,14 +22,9 @@ const options: ErrorMessageOptions = {
 export class Config {
   private config!: ConfigDTO
   private mainFileConfig!: MainFileDTO
-  private parser: Parser
+  private parser = new Parser()
 
-  constructor(
-    private readonly path: string,
-    private readonly mainPath = DEFAULT_MAIN_PATH,
-  ) {
-    this.parser = new Parser()
-  }
+  constructor(private readonly mainPath = DEFAULT_MAIN_PATH) {}
 
   public async setup() {
     const configPath = join(process.cwd(), DEFAULT_CONFIG_PATH)
@@ -50,7 +42,7 @@ export class Config {
       throw generateErrorMessage(error.issues, options)
     }
 
-    await this.setupMainFile(data?.mainPath || this.mainPath)
+    await this.setupMainFile(join(data.repo, this.mainPath))
 
     this.config = data
 
@@ -61,27 +53,13 @@ export class Config {
     return { ...this.config, ...this.mainFileConfig }
   }
 
-  private async setupMainFile(mainPath: string) {
-    const filePath = join(this.path, mainPath)
-    const content = await Fs.read(filePath)
+  private async setupMainFile(mainFilePath: string) {
+    const content = await Fs.read(mainFilePath)
 
-    const [node] = this.parser
-      .setup(content)
-      .getNodes()
-      .filter(isFunctionDeclaration)
-      .flatMap((statement) => statement.body?.statements)
-      .filter(Boolean)
-      .filter(isExpressionStatement)
-      .map((statement) => statement.expression)
-      .filter(isCallExpression)
-      .filter(
-        (statement) =>
-          isPropertyAccessExpression(statement.expression) &&
-          statement.expression.name.escapedText === 'setGlobalPrefix',
-      )
+    const [node] = findGlobalPrefixNode(this.parser.setup(content).getNodes())
 
     if (!node) {
-      logger.warn(`Not found globalPrefix in ${filePath}`)
+      logger.warn(`Not found globalPrefix in ${mainFilePath}`)
 
       return (this.mainFileConfig = {})
     }

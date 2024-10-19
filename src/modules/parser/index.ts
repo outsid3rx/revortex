@@ -1,23 +1,16 @@
-import ts from 'typescript'
-
-export {
-  isCallExpression,
-  isExpressionStatement,
-  isFunctionDeclaration,
-  isPropertyAccessExpression,
-  isStringLiteral,
-} from './utils'
+import type { SourceFile } from 'typescript'
+import { createSourceFile, ScriptKind, ScriptTarget } from 'typescript'
 
 export class Parser {
-  private source!: ts.SourceFile
+  private source!: SourceFile
 
   public setup(source: string) {
-    this.source = ts.createSourceFile(
+    this.source = createSourceFile(
       'index.ts',
       source,
-      ts.ScriptTarget.Latest,
+      ScriptTarget.Latest,
       true,
-      ts.ScriptKind.TS,
+      ScriptKind.TS,
     )
 
     return this

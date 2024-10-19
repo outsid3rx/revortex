@@ -7,4 +7,9 @@ module.exports = configure({
     presets.prettier(),
     presets.imports({ sort: { newline: true } }),
   ],
+  extend: {
+    rules: {
+      "@typescript-eslint/consistent-type-imports": "error"
+    }
+  }
 })
