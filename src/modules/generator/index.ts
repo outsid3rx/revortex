@@ -246,13 +246,15 @@ export class Generator {
     parameterEntries: IApiWrapperParameterEntry[],
     markAsOptional = false,
   ) => {
+    const requiredParams = [TOKENS.URL, TOKENS.METHOD]
+
     return parameterEntries.map(({ name, temporalType }) => {
       const isApiParameter = METHODS.includes(toPascalCase(name))
 
       return factory.createPropertySignature(
         undefined,
         factory.createIdentifier(name),
-        markAsOptional
+        markAsOptional && !requiredParams.includes(name)
           ? factory.createToken(SyntaxKind.QuestionToken)
           : undefined,
         isApiParameter
