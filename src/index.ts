@@ -29,6 +29,7 @@ const main = async () => {
 
   const generator = new Generator(
     config.get().importAliasSrcDir || repo + sourceDir,
+    config.get().globalPrefix,
   )
 
   const parsedControllers = (

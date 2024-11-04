@@ -44,7 +44,10 @@ export class Generator {
 
   private fileContent = ''
 
-  constructor(private readonly importAliasSrcDir: string) {}
+  constructor(
+    private readonly importAliasSrcDir: string,
+    private readonly globalPrefix = '',
+  ) {}
 
   public generateImports(controllers: ControllersData) {
     this.createImport(BASE_IMPORTS)
@@ -131,7 +134,9 @@ export class Generator {
                             ...this.createApiCallShorthands(allowedMethods),
                             factory.createPropertyAssignment(
                               TOKENS.URL,
-                              factory.createStringLiteral(member.path),
+                              factory.createStringLiteral(
+                                this.globalPrefix + member.path,
+                              ),
                             ),
                             factory.createPropertyAssignment(
                               TOKENS.METHOD,
