@@ -10,7 +10,7 @@ import { ControllersParser } from './modules/controllers-parser'
 import { Fs } from './modules/fs'
 import { Generator } from './modules/generator'
 
-export { AbstractApiMethod, apiCall } from './lib'
+export { AbstractApiMethod, apiCall } from './modules/lib'
 
 const program = new Command()
 
