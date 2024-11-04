@@ -1,19 +1,23 @@
 export enum MethodType {
   Body = 'Body',
   Query = 'Query',
-  Params = 'Params',
+  Param = 'Param',
+  Return = 'Return',
 }
 
 export const METHOD_TYPE_MAP: Record<string, MethodType> = {
   [MethodType.Body]: MethodType.Body,
   [MethodType.Query]: MethodType.Query,
-  [MethodType.Params]: MethodType.Params,
+  [MethodType.Param]: MethodType.Param,
 }
 
-interface IMethodDeclaration {
+export const METHODS = Object.values(MethodType)
+
+export interface IMethodDeclaration {
   name: string
   path: string
   params: IParameterDeclaration[]
+  method: MethodType
 }
 
 export interface IClassDeclaration {
@@ -23,7 +27,9 @@ export interface IClassDeclaration {
 }
 
 export interface IParameterDeclaration {
-  index: number
   name: string
   type: MethodType
+  parameterTypeIndex: Record<string, number> | number
 }
+
+export type ControllersData = IClassDeclaration[]

@@ -1,12 +1,16 @@
 #!/usr/bin/env node
 
-import { join } from 'path'
 import { Command } from 'commander'
+import { join } from 'node:path'
 
+import { OUT_FILE_NAME } from './constants'
 import { Config } from './modules/config'
 import { ControllersFinder } from './modules/controllers-finder'
 import { ControllersParser } from './modules/controllers-parser'
 import { Fs } from './modules/fs'
+import { Generator } from './modules/generator'
+
+export { AbstractApiMethod, apiCall } from './lib'
 
 const program = new Command()
 
@@ -23,13 +27,47 @@ const main = async () => {
 
   const { repo, sourceDir } = config.get()
 
-  await Promise.all(
-    controllers.map(async (controller) => {
-      const fileContent = await Fs.read(join(repo, sourceDir, controller))
-      const parser = new ControllersParser().setup(controller, fileContent)
+  const generator = new Generator(
+    config.get().importAliasSrcDir || repo + sourceDir,
+  )
 
-      parser.getMethods()
-    }),
+  const parsedControllers = (
+    await Promise.all(
+      controllers.map(async (controller) => {
+        const fileContent = await Fs.read(join(repo, sourceDir, controller))
+
+        if (!fileContent) {
+          return
+        }
+
+        return new ControllersParser()
+          .setup(controller, fileContent)
+          .getMethods()
+      }),
+    )
+  )
+    .filter(Boolean)
+    .flat()
+
+  const outDir = join(config.get().outDir)
+
+  if (!Fs.isExists(outDir)) {
+    await Fs.mkdir(outDir)
+  }
+
+  const outFilePath = join(outDir, OUT_FILE_NAME)
+
+  if (Fs.isExists(outFilePath)) {
+    await Fs.removeFile(outFilePath)
+  }
+
+  await Fs.write(
+    outFilePath,
+    generator
+      .generateImports(parsedControllers)
+      .createMainNamespace(parsedControllers)
+      .createApiWrapper(parsedControllers)
+      .print(),
   )
 }
 

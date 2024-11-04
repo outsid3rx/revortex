@@ -9,7 +9,7 @@ import {
 
 import { logger } from '../logger'
 import { Parser } from '../parser'
-import type { IClassDeclaration } from './types'
+import type { ControllersData } from './types'
 import {
   findMethodDecorator,
   getControllerData,
@@ -37,67 +37,62 @@ export class ControllersParser {
       .filter(isControllerClass)
 
     if (!controllers) {
-      return {}
+      return []
     }
 
-    return controllers.reduce<Record<string, IClassDeclaration>>(
-      (acc, controller) => {
-        if (!controller.name?.escapedText) {
-          return acc
-        }
-
-        const { controllerPath } = getControllerData(controller)
-
-        acc[this.fileName] = {
-          name: controller.name.escapedText,
-          fileName: this.fileName,
-          members: controller.members
-            .filter(isMethodDeclaration)
-            .map((method) => {
-              const methodDecorator = findMethodDecorator(
-                method.modifiers?.filter(isDecorator) || [],
-              )
-
-              if (!methodDecorator) {
-                logger.info(
-                  `Method decorator for method ${isIdentifier(method.name) && method.name.escapedText} in controller ${this.fileName} is not set, file will be skipped`,
-                )
-                return undefined
-              }
-
-              const { expression, arguments: args } = isCallExpression(
-                methodDecorator.expression,
-              )
-                ? methodDecorator.expression
-                : {}
-
-              if (!args || !expression) {
-                return undefined
-              }
-
-              const [textExpression] = args
-
-              const params = getParameters(method.parameters)
-
-              return {
-                path:
-                  controllerPath +
-                  (isStringLiteral(textExpression) ? textExpression.text : ''),
-                name: isIdentifier(method.name)
-                  ? String(method.name.escapedText)
-                  : '',
-                method: isIdentifier(expression)
-                  ? expression.escapedText
-                  : 'Get',
-                params,
-              }
-            })
-            .filter(Boolean),
-        }
-
+    return controllers.reduce<ControllersData>((acc, controller) => {
+      if (!controller.name?.escapedText) {
         return acc
-      },
-      {},
-    )
+      }
+
+      const { controllerPath } = getControllerData(controller)
+
+      acc.push({
+        name: controller.name.escapedText,
+        fileName: this.fileName,
+        members: controller.members
+          .filter(isMethodDeclaration)
+          .map((method) => {
+            const methodDecorator = findMethodDecorator(
+              method.modifiers?.filter(isDecorator) || [],
+            )
+
+            if (!methodDecorator) {
+              logger.info(
+                `Method decorator for method ${isIdentifier(method.name) && method.name.escapedText} in controller ${this.fileName} is not set, file will be skipped`,
+              )
+              return undefined
+            }
+
+            const { expression, arguments: args } = isCallExpression(
+              methodDecorator.expression,
+            )
+              ? methodDecorator.expression
+              : {}
+
+            if (!args || !expression) {
+              return undefined
+            }
+
+            const [textExpression] = args
+
+            const params = getParameters(method.parameters)
+
+            return {
+              path:
+                controllerPath +
+                (isStringLiteral(textExpression) ? textExpression.text : ''),
+              name: isIdentifier(method.name)
+                ? String(method.name.escapedText)
+                : '',
+              method: isIdentifier(expression) ? expression.escapedText : 'Get',
+              params,
+            }
+          })
+          .filter(Boolean),
+      })
+
+      return acc
+    }, [])
   }
 }

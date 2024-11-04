@@ -1,10 +1,22 @@
-import { existsSync } from 'fs'
-import { readFile } from 'fs/promises'
+import { existsSync } from 'node:fs'
+import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises'
 import readdirp from 'readdirp'
 
 export class Fs {
+  static removeFile(path: string) {
+    return unlink(path)
+  }
+
+  static mkdir(path: string) {
+    return mkdir(path)
+  }
+
   static read(path: string) {
     return readFile(path, { encoding: 'utf-8' })
+  }
+
+  static write(path: string, content: string) {
+    return writeFile(path, content, { encoding: 'utf-8' })
   }
 
   static async findFilesRecursive(path: string) {
