@@ -81,7 +81,9 @@ export class ControllersParser {
             return {
               path:
                 controllerPath +
-                (isStringLiteral(textExpression) ? textExpression.text : ''),
+                (textExpression && isStringLiteral(textExpression)
+                  ? textExpression.text
+                  : ''),
               name: isIdentifier(method.name)
                 ? String(method.name.escapedText)
                 : '',

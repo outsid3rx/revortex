@@ -89,7 +89,7 @@ export class Generator {
               factory.createObjectLiteralExpression(
                 controller.members.map((member) => {
                   const allowedData = member.params
-                    .filter(Boolean)
+                    .filter((parameter) => Boolean(parameter) && parameter.type)
                     .map((param) => param.type.toLowerCase())
                   const allowedMethods = API_WRAPPER_BASE_BINDINGS.filter(
                     (name) => allowedData.includes(name),
@@ -315,20 +315,22 @@ export class Generator {
   ) => {
     const exportModifier = factory.createModifier(SyntaxKind.ExportKeyword)
 
-    const properties = member.params.filter(Boolean).map((param) => {
-      return factory.createPropertySignature(
-        undefined,
-        factory.createIdentifier(param.type),
-        undefined,
-        isNumber(param.parameterTypeIndex)
-          ? this.createUnnamedParameters(member, controllerName, param)
-          : this.createNamedParameters(
-              member,
-              controllerName,
-              param.parameterTypeIndex,
-            ),
-      )
-    })
+    const properties = member.params
+      .filter((parameter) => Boolean(parameter) && parameter.type)
+      .map((param) => {
+        return factory.createPropertySignature(
+          undefined,
+          factory.createIdentifier(param.type),
+          undefined,
+          isNumber(param.parameterTypeIndex)
+            ? this.createUnnamedParameters(member, controllerName, param)
+            : this.createNamedParameters(
+                member,
+                controllerName,
+                param.parameterTypeIndex,
+              ),
+        )
+      })
 
     properties.push(
       factory.createPropertySignature(
