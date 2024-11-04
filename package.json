@@ -1,5 +1,5 @@
 {
-  "name": "vort_ex",
+  "name": "revortex",
   "version": "1.0.0",
   "main": "./dist/index.js",
   "bin": "./dist/index.js",
@@ -35,5 +35,13 @@
     "ky": "^1.7.2",
     "lefthook": "^1.7.18",
     "prettier": "^3.3.3"
+  },
+  "bugs": {
+    "url": "https://gitlab.com/winterzz-dev/vort_ex/-/issues"
+  },
+  "homepage": "https://gitlab.com/winterzz-dev/vort_ex",
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/winterzz-dev/vort_ex.git"
   }
 }

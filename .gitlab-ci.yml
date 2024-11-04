@@ -1,0 +1,13 @@
+image: node:latest
+stages:
+  - deploy
+
+deploy:
+  stage: deploy
+  script:
+    - npm install
+    - CI=false npm run build
+    - echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+    - npm publish --access=public
+  only:
+    - master
