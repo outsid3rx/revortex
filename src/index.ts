@@ -10,6 +10,8 @@ import { ControllersParser } from './modules/controllers-parser'
 import { Fs } from './modules/fs'
 import { Generator } from './modules/generator'
 
+export * from './modules/types'
+
 const program = new Command()
 
 program
