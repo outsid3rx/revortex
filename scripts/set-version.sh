@@ -1,7 +1,7 @@
 #!/bin/bash
 
-branch=$(git rev-parse --abbrev-ref HEAD)
-regex="release-([0-9].[0-9].[0-9])"
+branch=$1
+regex="v([0-9].[0-9].[0-9])"
 
 if [[ $branch =~ $regex ]]; then
   version="${BASH_REMATCH[1]}"
