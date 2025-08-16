@@ -45,7 +45,7 @@ export const findMethodDecorator = (decorators: Decorator[]) =>
 
 export const getControllerData = (controller: ClassDeclaration) => {
   const controllerDecorator = findControllerDecorator(
-    controller.modifiers!.filter(isDecorator),
+    controller.modifiers?.filter(isDecorator) as Decorator[],
   )
   const controllerArgument =
     controllerDecorator?.expression &&
@@ -82,7 +82,7 @@ export const getParameters = (parameters: NodeArray<ParameterDeclaration>) => {
 
     const shouldGetParameter = decoratorName !== MethodType.Body
 
-    return result.push({
+    result.push({
       type: decoratorName,
       name: isIdentifier(parameter.name) ? parameter.name.text : '',
       parameterTypeIndex: shouldGetParameter
