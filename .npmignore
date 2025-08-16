@@ -2,3 +2,9 @@ node_modules
 .idea
 src
 logs
+.github
+docs
+scripts
+lefthook.yml
+.eslintrc.cjs
+.prettierrc
