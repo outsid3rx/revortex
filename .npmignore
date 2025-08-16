@@ -2,3 +2,10 @@ node_modules
 .idea
 src
 logs
+.github
+docs
+scripts
+lefthook.yml
+biome.json
+tsdown.config.ts
+.gitignore
