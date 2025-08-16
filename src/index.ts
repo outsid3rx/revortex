@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { Command } from 'commander'
 import { join } from 'node:path'
+import { Command } from 'commander'
 
 import { OUT_FILE_NAME } from './constants'
 import { Config } from './modules/config'
