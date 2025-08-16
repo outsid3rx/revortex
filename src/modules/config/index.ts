@@ -1,4 +1,4 @@
-import { join } from 'path'
+import { join } from 'node:path'
 import { isStringLiteral } from 'typescript'
 import type { ErrorMessageOptions } from 'zod-error'
 import { generateErrorMessage } from 'zod-error'
@@ -61,7 +61,9 @@ export class Config {
     if (!node) {
       logger.warn(`Not found globalPrefix in ${mainFilePath}`)
 
-      return (this.mainFileConfig = {})
+      this.mainFileConfig = {}
+
+      return
     }
 
     const [stringLiteralArgument] = node.arguments
@@ -74,9 +76,11 @@ export class Config {
     })
 
     if (error) {
-      return (this.mainFileConfig = {})
+      this.mainFileConfig = {}
+
+      return
     }
 
-    return (this.mainFileConfig = data)
+    this.mainFileConfig = data
   }
 }

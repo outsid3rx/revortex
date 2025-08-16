@@ -8,8 +8,8 @@
     "build:dev": "tsdown --sourcemap --no-clean --watch ./src",
     "run": "node ./dist/index.js",
     "run:dev": "node --watch ./dist/index.js",
-    "lint": "eslint \"./src/**/*.ts\" --max-warnings=0",
-    "lint:fix": "eslint \"./src/**/*.ts\" --max-warnings=0 --fix"
+    "lint": "npx @biomejs/biome check ./src/*",
+    "lint:fix": "npx @biomejs/biome check --write ./src/*"
   },
   "keywords": [
     "nest",
@@ -29,13 +29,11 @@
     "zod-error": "^1.5.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.2.0",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/node": "^22.7.4",
-    "eslint": "^8.57.1",
-    "eslint-kit": "^11.19.0",
     "ky": "^1.7.2",
     "lefthook": "^1.7.18",
-    "prettier": "^3.3.3",
     "tsdown": "^0.14.1"
   },
   "bugs": {
