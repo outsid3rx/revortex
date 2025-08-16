@@ -4,8 +4,8 @@
   "main": "./dist/index.js",
   "bin": "./dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "build:dev": "tsc --watch",
+    "build": "tsdown --no-clean --minify",
+    "build:dev": "tsdown --sourcemap --no-clean --watch ./src",
     "run": "node ./dist/index.js",
     "run:dev": "node --watch ./dist/index.js",
     "lint": "eslint \"./src/**/*.ts\" --max-warnings=0",
@@ -35,7 +35,8 @@
     "eslint-kit": "^11.19.0",
     "ky": "^1.7.2",
     "lefthook": "^1.7.18",
-    "prettier": "^3.3.3"
+    "prettier": "^3.3.3",
+    "tsdown": "^0.14.1"
   },
   "bugs": {
     "url": "https://github.com/outsid3rx/revortex/issues"
