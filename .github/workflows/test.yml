@@ -1,0 +1,9 @@
+name: Test
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -f Dockerfile.test -t test-container .
+      - run: docker run --rm test-container

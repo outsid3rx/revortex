@@ -9,3 +9,4 @@ lefthook.yml
 biome.json
 tsdown.config.ts
 .gitignore
+tests
