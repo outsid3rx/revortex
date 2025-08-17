@@ -147,29 +147,30 @@ export class Generator {
 
                   const typePath = `${TOKENS.API}.${toPascalCase(controller.name)}.${toPascalCase(member.name)}`
 
+                  const methodParams = createApiWrapperParameters(
+                    typePath,
+                  ).filter((method) => allowedMethods.includes(method.name))
+
                   return factory.createPropertyAssignment(
                     member.name,
                     factory.createArrowFunction(
                       [],
                       undefined,
-                      [
-                        factory.createParameterDeclaration(
-                          [],
-                          undefined,
-                          factory.createObjectBindingPattern(
-                            this.createApiWrapperBindings(allowedMethods),
-                          ),
-                          undefined,
-                          factory.createTypeLiteralNode(
-                            this.createApiWrapperParameters(
-                              createApiWrapperParameters(typePath).filter(
-                                (method) =>
-                                  allowedMethods.includes(method.name),
+                      methodParams.length > 0
+                        ? [
+                            factory.createParameterDeclaration(
+                              [],
+                              undefined,
+                              factory.createObjectBindingPattern(
+                                this.createApiWrapperBindings(allowedMethods),
+                              ),
+                              undefined,
+                              factory.createTypeLiteralNode(
+                                this.createApiWrapperParameters(methodParams),
                               ),
                             ),
-                          ),
-                        ),
-                      ],
+                          ]
+                        : [],
                       undefined,
                       undefined,
                       factory.createCallExpression(
