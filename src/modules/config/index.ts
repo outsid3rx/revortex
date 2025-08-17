@@ -11,6 +11,8 @@ import type { ConfigDTO, MainFileDTO } from './schema'
 import { configSchema, mainFileSchema } from './schema'
 import { findGlobalPrefixNode } from './utils'
 
+export { configSchema } from './schema'
+
 const options: ErrorMessageOptions = {
   delimiter: {
     error: ' 🔥 ',
