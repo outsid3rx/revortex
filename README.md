@@ -96,11 +96,11 @@ Now we need to create an instance of `api` using the out-of-the-box utility and 
 
 ```typescript
 import ky from 'ky'
-import { apiCall } from 'revortex-wrapper'
+import { apiCall } from 'revortex/wrapper'
 import { createApi } from '../lib'
 
 const api = createApi(ky, apiCall)
-await api.AppController.getHello({})
+await api.AppController.getHello()
 ```
 
 At this point, an instance of `ky` is needed to create the wrapper, since the wrapper itself is built on interaction with this package.
