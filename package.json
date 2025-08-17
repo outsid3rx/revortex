@@ -9,7 +9,10 @@
     "run": "node ./dist/index.js",
     "run:dev": "node --watch ./dist/index.js",
     "lint": "npx @biomejs/biome check ./src/*",
-    "lint:fix": "npx @biomejs/biome check --write ./src/*"
+    "lint:fix": "npx @biomejs/biome check --write ./src/*",
+    "pretest": "./scripts/setup-nest.sh",
+    "test:watch": "vitest --dir ./tests",
+    "test": "if ls ./tests/*.test.* 1> /dev/null 2>&1; then vitest --watch=false --dir ./tests; else echo 'No tests found'; fi"
   },
   "keywords": [
     "nest",
@@ -34,7 +37,8 @@
     "@types/node": "^22.7.4",
     "ky": "^1.7.2",
     "lefthook": "^1.7.18",
-    "tsdown": "^0.14.1"
+    "tsdown": "^0.14.1",
+    "vitest": "^3.2.4"
   },
   "bugs": {
     "url": "https://github.com/outsid3rx/revortex/issues"
