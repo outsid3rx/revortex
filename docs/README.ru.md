@@ -100,11 +100,11 @@ task generate-api
 
 ```typescript
 import ky from 'ky'
-import { apiCall } from 'revortex-wrapper'
+import { apiCall } from 'revortex/wrapper'
 import { createApi } from '../lib'
 
 const api = createApi(ky, apiCall)
-await api.AppController.getHello({})
+await api.AppController.getHello()
 ```
 
 На данный момент для создания обертки необходим экземпляр `ky`, так как работа самой обертки построена на взаимодействии с этим пакетом.
