@@ -8,7 +8,7 @@ export const BASE_IMPORTS: IImportEntry[] = [
   },
   {
     name: 'AbstractApiMethod',
-    from: 'vort_ex',
+    from: 'revortex',
     isType: true,
   },
 ]
