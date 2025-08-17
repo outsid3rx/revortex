@@ -11,6 +11,7 @@ import { Fs } from './modules/fs'
 import { Generator } from './modules/generator'
 
 export * from './modules/types'
+export { apiCall } from './wrapper'
 
 const program = new Command()
 
