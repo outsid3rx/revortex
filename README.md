@@ -1,5 +1,7 @@
 # revortex
 
+### [revortex in npm](https://www.npmjs.com/package/revortex?activeTab=readme)
+
 [Same page on russian.](docs/README.ru.md)
 
 Utility for automatic generation of API client from [Nest](https://nestjs.com/) project source code.
