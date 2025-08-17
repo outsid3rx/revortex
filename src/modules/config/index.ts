@@ -1,8 +1,8 @@
 import { join } from 'node:path'
 import { isStringLiteral } from 'typescript'
+import type { z } from 'zod'
 import type { ErrorMessageOptions } from 'zod-error'
 import { generateErrorMessage } from 'zod-error'
-
 import { Fs } from '../fs'
 import { logger } from '../logger'
 import { Parser } from '../parser'
@@ -10,6 +10,8 @@ import { DEFAULT_CONFIG_PATH, DEFAULT_MAIN_PATH } from './constants'
 import type { ConfigDTO, MainFileDTO } from './schema'
 import { configSchema, mainFileSchema } from './schema'
 import { findGlobalPrefixNode } from './utils'
+
+export { configSchema } from './schema'
 
 const options: ErrorMessageOptions = {
   delimiter: {
@@ -26,17 +28,16 @@ export class Config {
 
   constructor(private readonly mainPath = DEFAULT_MAIN_PATH) {}
 
-  public async setup() {
+  public async setup(inlineConfig: Partial<z.infer<typeof configSchema>>) {
     const configPath = join(process.cwd(), DEFAULT_CONFIG_PATH)
 
-    if (!Fs.isExists(configPath)) {
-      throw new Error(`Config file not found: ${configPath}`)
-    }
-
-    const content = await Fs.read(configPath)
-    const { error, data } = await configSchema.safeParseAsync(
-      JSON.parse(content),
+    const content = configSchema.safeParse(
+      JSON.parse(await Fs.read(configPath)),
     )
+    const { error, data } = await configSchema.safeParseAsync({
+      ...content.data,
+      ...inlineConfig,
+    })
 
     if (error) {
       throw generateErrorMessage(error.issues, options)
