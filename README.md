@@ -25,21 +25,31 @@ pnpm add revortex-wrapper
 
 ## Configuration and startup
 
+### Configuration via parameters
+
+For running the application, you can use command line parameters that will override the values in the `revortex.json` configuration file.
+
+```shell
+pnpm exec revortex --out ./lib/ --alias ~server/ --mainPath ./src/main.ts --sourceDir src/ ../server/
+```
+
+### Configuration via file
+
 Create a `revortex.json` file in the root of the project and set the required fields:
 
-### repo
+#### repo
 
 Link to the root directory of the project's Nest repository, e.g. `../server/` if the server and client repositories are on the same level.
 
-### outDir.
+#### out
 
 A reference to the directory where the final client will be saved, e.g. `./lib/`.
 
-### importAliasSrcDir (optional)
+#### alias (optional)
 
 Path alias (if configured) to the `src` directory of the server side, will help set up more explicit and shorter imports. By default is built from `repo` and `sourceDir`, such as `../server/src/`.
 
-### sourceDir (optional)
+#### sourceDir (optional)
 
 If when building Nest application you have organized the location of modules differently from the starting template, you need to specify the path to the directory that contains the modules, relative to the root directory of the server part of the application. The default is `src/`.
 
@@ -48,8 +58,8 @@ A normal `revortex.json` file looks like this:
 ```json
 {
   "repo": "../server/",
-  "outDir": "./lib/",
-  "importAliasSrcDir": "~server/"
+  "out": "./lib/",
+  "alias": "~server/"
 }
 ```
 
