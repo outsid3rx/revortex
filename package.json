@@ -24,7 +24,7 @@
   "description": "Generate REST API for frontend projects from Nest controllers",
   "dependencies": {
     "commander": "^12.1.0",
-    "readdirp": "^4.0.2",
+    "es-toolkit": "^1.39.10",
     "ts-morph": "^26.0.0",
     "typescript": "^5.6.2",
     "winston": "^3.15.0",
