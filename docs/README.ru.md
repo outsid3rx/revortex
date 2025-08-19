@@ -100,7 +100,7 @@ task generate-api
 
 ```typescript
 import ky from 'ky'
-import { apiCall } from 'revortex/wrapper'
+import { apiCall } from 'revortex/dist/wrapper'
 import { createApi } from '../lib'
 
 const api = createApi(ky, apiCall)
