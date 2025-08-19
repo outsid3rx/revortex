@@ -7,7 +7,6 @@ import packageJson from '../package.json'
 import { OUT_FILE_NAME } from './constants'
 import type { configSchema } from './modules/config'
 import { Config } from './modules/config'
-import { ControllersFinder } from './modules/controllers-finder'
 import { ControllersParser } from './modules/controllers-parser'
 import { Fs } from './modules/fs'
 import { Generator } from './modules/generator'
@@ -37,7 +36,6 @@ const main = async () => {
   }
 
   const config = await new Config().setup(inlineConfig)
-  const controllers = await new ControllersFinder(config).find()
 
   const { repo, sourceDir } = config.get()
 
@@ -46,23 +44,7 @@ const main = async () => {
     config.get().globalPrefix,
   )
 
-  const parsedControllers = (
-    await Promise.all(
-      controllers.map(async (controller) => {
-        const fileContent = await Fs.read(join(repo, sourceDir, controller))
-
-        if (!fileContent) {
-          return
-        }
-
-        return new ControllersParser()
-          .setup(controller, fileContent)
-          .getMethods()
-      }),
-    )
-  )
-    .filter(Boolean)
-    .flat()
+  const parsedControllers = new ControllersParser(join(repo, sourceDir)).setup()
 
   const outDir = join(config.get().out)
 
