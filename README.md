@@ -96,7 +96,7 @@ Now we need to create an instance of `api` using the out-of-the-box utility and 
 
 ```typescript
 import ky from 'ky'
-import { apiCall } from 'revortex/wrapper'
+import { apiCall } from 'revortex/dist/wrapper'
 import { createApi } from '../lib'
 
 const api = createApi(ky, apiCall)
