@@ -31,11 +31,12 @@ export class Config {
   public async setup(inlineConfig: Partial<z.infer<typeof configSchema>>) {
     const configPath = join(process.cwd(), DEFAULT_CONFIG_PATH)
 
-    const content = configSchema.safeParse(
-      JSON.parse(await Fs.read(configPath)),
-    )
+    const content = Fs.isExists(configPath)
+      ? configSchema.safeParse(JSON.parse(await Fs.read(configPath)))
+      : undefined
+
     const { error, data } = await configSchema.safeParseAsync({
-      ...content.data,
+      ...(content ? content.data : {}),
       ...inlineConfig,
     })
 

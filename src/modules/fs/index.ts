@@ -7,7 +7,7 @@ export class Fs {
   }
 
   static mkdir(path: string) {
-    return mkdir(path)
+    return mkdir(path, { recursive: true })
   }
 
   static read(path: string) {
