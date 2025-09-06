@@ -20,6 +20,7 @@ program
   .description('Generate REST API for frontend projects from Nest controllers')
   .version(packageJson.version)
   .option('-o, --out <string>', 'Output directory for generated file')
+  .option('-f, --file <string>', 'Output file name')
   .option('-a, --alias <string>', 'Import alias for imported files')
   .option('-s, --sourceDir <string>', 'Alias for src directory')
   .argument('[repo], <string>', 'Path to the Nest repository root')
@@ -29,7 +30,8 @@ const options = program.opts()
 
 const main = async () => {
   const inlineConfig: Partial<z.infer<typeof configSchema>> = {
-    ...(options.outDir ? { out: options.out } : {}),
+    ...(options.out ? { out: options.out } : {}),
+    ...(options.file ? { file: options.file } : {}),
     ...(options.alias ? { alias: options.alias } : {}),
     ...(options.sourceDir ? { sourceDir: options.sourceDir } : {}),
     ...(program.args[0] ? { repo: program.args[0] } : {}),
@@ -52,7 +54,7 @@ const main = async () => {
     await Fs.mkdir(outDir)
   }
 
-  const outFilePath = join(outDir, OUT_FILE_NAME)
+  const outFilePath = join(outDir, config.get().file || OUT_FILE_NAME)
 
   if (Fs.isExists(outFilePath)) {
     await Fs.removeFile(outFilePath)

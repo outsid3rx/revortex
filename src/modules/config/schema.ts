@@ -6,6 +6,7 @@ export const configSchema = z.object({
   mainPath: z.string().optional().default(DEFAULT_MAIN_PATH),
   sourceDir: z.string().optional().default(DEFAULT_SOURCE_DIR),
   alias: z.string().optional(),
+  file: z.string().optional(),
   repo: z.string(),
   out: z.string(),
 })
