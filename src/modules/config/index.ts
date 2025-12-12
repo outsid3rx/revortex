@@ -1,25 +1,25 @@
 import { join } from 'node:path'
 import { isStringLiteral } from 'typescript'
 import type { z } from 'zod'
-import type { ErrorMessageOptions } from 'zod-error'
 import { generateErrorMessage } from 'zod-error'
 import { Fs } from '../fs'
 import { logger } from '../logger'
 import { Parser } from '../parser'
-import { DEFAULT_CONFIG_PATH, DEFAULT_MAIN_PATH } from './constants'
-import type { ConfigDTO, MainFileDTO } from './schema'
-import { configSchema, mainFileSchema } from './schema'
-import { findGlobalPrefixNode } from './utils'
+import {
+  DEFAULT_CONFIG_PATH,
+  DEFAULT_MAIN_PATH,
+  zodErrorOptions,
+} from './constants'
+import {
+  type ConfigDTO,
+  configSchema,
+  type MainFileDTO,
+  mainFileSchema,
+  partialConfigSchema,
+} from './schema'
+import { execAsync, findGlobalPrefixNode } from './utils'
 
 export { configSchema } from './schema'
-
-const options: ErrorMessageOptions = {
-  delimiter: {
-    error: ' 🔥 ',
-  },
-  transform: ({ errorMessage, index }) =>
-    `Error #${index + 1}: ${errorMessage}`,
-}
 
 export class Config {
   private config!: ConfigDTO
@@ -28,20 +28,23 @@ export class Config {
 
   constructor(private readonly mainPath = DEFAULT_MAIN_PATH) {}
 
-  public async setup(inlineConfig: Partial<z.infer<typeof configSchema>>) {
-    const configPath = join(process.cwd(), DEFAULT_CONFIG_PATH)
-
-    const content = Fs.isExists(configPath)
-      ? configSchema.safeParse(JSON.parse(await Fs.read(configPath)))
-      : undefined
+  public async setup(inlineConfigData: Partial<z.infer<typeof configSchema>>) {
+    const [inlineConfig, configFileData, packageJsonConfig] = await Promise.all(
+      [
+        this.parseInlineConfig(inlineConfigData),
+        this.readConfigFile(),
+        this.readPackageJsonConfig(),
+      ],
+    )
 
     const { error, data } = await configSchema.safeParseAsync({
-      ...(content ? content.data : {}),
+      ...packageJsonConfig,
+      ...configFileData,
       ...inlineConfig,
     })
 
     if (error) {
-      throw generateErrorMessage(error.issues, options)
+      throw generateErrorMessage(error.issues, zodErrorOptions)
     }
 
     await this.setupMainFile(join(data.repo, this.mainPath))
@@ -53,6 +56,46 @@ export class Config {
 
   public get() {
     return { ...this.config, ...this.mainFileConfig }
+  }
+
+  private async readConfigFile(): Promise<
+    Partial<z.infer<typeof configSchema>>
+  > {
+    const configPath = join(process.cwd(), DEFAULT_CONFIG_PATH)
+    try {
+      const content = await Fs.read(configPath)
+      const { data } = await partialConfigSchema.safeParseAsync(
+        JSON.parse(content),
+      )
+
+      return data || {}
+    } catch (_) {
+      return {}
+    }
+  }
+
+  private async readPackageJsonConfig(): Promise<
+    Partial<z.infer<typeof configSchema>>
+  > {
+    const { stdout } = await execAsync('npm pkg get revortex')
+
+    try {
+      const { data } = await partialConfigSchema.safeParseAsync(
+        JSON.parse(stdout) as Partial<z.infer<typeof configSchema>>,
+      )
+
+      return data || {}
+    } catch (_) {
+      return {}
+    }
+  }
+
+  private async parseInlineConfig(
+    inlineConfig: Partial<z.infer<typeof configSchema>>,
+  ): Promise<Partial<z.infer<typeof configSchema>>> {
+    const { data } = await partialConfigSchema.safeParseAsync(inlineConfig)
+
+    return data || {}
   }
 
   private async setupMainFile(mainFilePath: string) {

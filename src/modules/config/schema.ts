@@ -11,6 +11,8 @@ export const configSchema = z.object({
   out: z.string(),
 })
 
+export const partialConfigSchema = configSchema.partial()
+
 export const mainFileSchema = z.object({
   globalPrefix: z.string().optional(),
 })
