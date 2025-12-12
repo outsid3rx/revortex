@@ -1,6 +1,5 @@
 import { existsSync } from 'node:fs'
 import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises'
-import readdirp from 'readdirp'
 
 export class Fs {
   static removeFile(path: string) {
@@ -8,7 +7,7 @@ export class Fs {
   }
 
   static mkdir(path: string) {
-    return mkdir(path)
+    return mkdir(path, { recursive: true })
   }
 
   static read(path: string) {
@@ -17,17 +16,6 @@ export class Fs {
 
   static write(path: string, content: string) {
     return writeFile(path, content, { encoding: 'utf-8' })
-  }
-
-  static async findFilesRecursive(path: string) {
-    const result: string[] = []
-
-    for await (const entry of readdirp(path)) {
-      const { path } = entry
-      result.push(path)
-    }
-
-    return result
   }
 
   static isExists(path: string) {

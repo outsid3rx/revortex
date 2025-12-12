@@ -4,12 +4,15 @@
   "main": "./dist/index.js",
   "bin": "./dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "build:dev": "tsc --watch",
+    "build": "tsdown --no-clean --minify",
+    "build:dev": "tsdown --sourcemap --no-clean --watch ./src",
     "run": "node ./dist/index.js",
     "run:dev": "node --watch ./dist/index.js",
-    "lint": "eslint \"./src/**/*.ts\" --max-warnings=0",
-    "lint:fix": "eslint \"./src/**/*.ts\" --max-warnings=0 --fix"
+    "lint": "npx @biomejs/biome check ./src/*",
+    "lint:fix": "npx @biomejs/biome check --write ./src/*",
+    "pretest": "./scripts/setup-nest.sh",
+    "test:watch": "vitest --dir ./tests",
+    "test": "if ls ./tests/*.test.* 1> /dev/null 2>&1; then vitest --watch=false --dir ./tests; else echo 'No tests found'; fi"
   },
   "keywords": [
     "nest",
@@ -20,8 +23,9 @@
   "license": "MIT",
   "description": "Generate REST API for frontend projects from Nest controllers",
   "dependencies": {
+    "@phenomnomnominal/tsquery": "^6.1.4",
     "commander": "^12.1.0",
-    "readdirp": "^4.0.2",
+    "es-toolkit": "^1.39.10",
     "ts-morph": "^26.0.0",
     "typescript": "^5.6.2",
     "winston": "^3.15.0",
@@ -29,13 +33,13 @@
     "zod-error": "^1.5.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.2.0",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/node": "^22.7.4",
-    "eslint": "^8.57.1",
-    "eslint-kit": "^11.19.0",
     "ky": "^1.7.2",
     "lefthook": "^1.7.18",
-    "prettier": "^3.3.3"
+    "tsdown": "^0.14.1",
+    "vitest": "^3.2.4"
   },
   "bugs": {
     "url": "https://github.com/outsid3rx/revortex/issues"

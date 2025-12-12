@@ -1,3 +1,4 @@
+import { join } from 'node:path'
 import { Project } from 'ts-morph'
 import {
   createPrinter,
@@ -9,7 +10,6 @@ import {
   ScriptTarget,
   SyntaxKind,
 } from 'typescript'
-
 import type {
   ControllersData,
   IParameterDeclaration,
@@ -53,7 +53,7 @@ export class Generator {
         ...BASE_IMPORTS,
         ...controllers.map(({ name, fileName }) => ({
           from: this.importAliasSrcDir + removeExtension(fileName),
-          isType: false,
+          isType: true,
           name,
         })),
       ].map(({ name, from, isType }) => ({
@@ -147,29 +147,30 @@ export class Generator {
 
                   const typePath = `${TOKENS.API}.${toPascalCase(controller.name)}.${toPascalCase(member.name)}`
 
+                  const methodParams = createApiWrapperParameters(
+                    typePath,
+                  ).filter((method) => allowedMethods.includes(method.name))
+
                   return factory.createPropertyAssignment(
                     member.name,
                     factory.createArrowFunction(
                       [],
                       undefined,
-                      [
-                        factory.createParameterDeclaration(
-                          [],
-                          undefined,
-                          factory.createObjectBindingPattern(
-                            this.createApiWrapperBindings(allowedMethods),
-                          ),
-                          undefined,
-                          factory.createTypeLiteralNode(
-                            this.createApiWrapperParameters(
-                              createApiWrapperParameters(typePath).filter(
-                                (method) =>
-                                  allowedMethods.includes(method.name),
+                      methodParams.length > 0
+                        ? [
+                            factory.createParameterDeclaration(
+                              [],
+                              undefined,
+                              factory.createObjectBindingPattern(
+                                this.createApiWrapperBindings(allowedMethods),
+                              ),
+                              undefined,
+                              factory.createTypeLiteralNode(
+                                this.createApiWrapperParameters(methodParams),
                               ),
                             ),
-                          ),
-                        ),
-                      ],
+                          ]
+                        : [],
                       undefined,
                       undefined,
                       factory.createCallExpression(
@@ -182,7 +183,7 @@ export class Generator {
                             factory.createPropertyAssignment(
                               TOKENS.URL,
                               factory.createStringLiteral(
-                                this.globalPrefix + member.path,
+                                join(this.globalPrefix, member.path),
                               ),
                             ),
                             factory.createPropertyAssignment(

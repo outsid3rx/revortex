@@ -5,10 +5,13 @@ import { DEFAULT_MAIN_PATH, DEFAULT_SOURCE_DIR } from './constants'
 export const configSchema = z.object({
   mainPath: z.string().optional().default(DEFAULT_MAIN_PATH),
   sourceDir: z.string().optional().default(DEFAULT_SOURCE_DIR),
-  importAliasSrcDir: z.string().optional(),
+  alias: z.string().optional(),
+  file: z.string().optional(),
   repo: z.string(),
-  outDir: z.string(),
+  out: z.string(),
 })
+
+export const partialConfigSchema = configSchema.partial()
 
 export const mainFileSchema = z.object({
   globalPrefix: z.string().optional(),

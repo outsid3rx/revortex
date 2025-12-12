@@ -1,21 +1,12 @@
-import type { NodeArray, Statement } from 'typescript'
-import {
-  isCallExpression,
-  isExpressionStatement,
-  isFunctionDeclaration,
-  isPropertyAccessExpression,
-} from 'typescript'
+import { exec } from 'node:child_process'
+import { promisify } from 'node:util'
+import { ast, query } from '@phenomnomnominal/tsquery'
+import type { CallExpression } from 'typescript'
 
-export const findGlobalPrefixNode = (nodes: NodeArray<Statement>) =>
-  nodes
-    .filter(isFunctionDeclaration)
-    .flatMap((statement) => statement.body?.statements)
-    .filter(Boolean)
-    .filter(isExpressionStatement)
-    .map((statement) => statement.expression)
-    .filter(isCallExpression)
-    .filter(
-      (statement) =>
-        isPropertyAccessExpression(statement.expression) &&
-        statement.expression.name.escapedText === 'setGlobalPrefix',
-    )
+export const execAsync = promisify(exec)
+
+export const findGlobalPrefixNode = (source: string) =>
+  query<CallExpression>(
+    ast(source),
+    'CallExpression[expression.name.escapedText="setGlobalPrefix"]',
+  )

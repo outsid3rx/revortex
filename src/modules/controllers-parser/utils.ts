@@ -1,110 +1,71 @@
 import type {
   ClassDeclaration,
   Decorator,
-  NodeArray,
   ParameterDeclaration,
-} from 'typescript'
-import {
-  isCallExpression,
-  isDecorator,
-  isIdentifier,
-  isStringLiteral,
-} from 'typescript'
+  SourceFile,
+  StringLiteral,
+} from 'ts-morph'
+import { type IParameterDeclaration, METHODS, MethodType } from './types'
 
-import { API_METHOD_DECORATOR_NAME } from './constants'
-import type { IParameterDeclaration } from './types'
-import { METHOD_TYPE_MAP, METHODS, MethodType } from './types'
+export const getFilePath = (file: SourceFile) => {
+  const [, path] = file.getFilePath().split('/src/')
 
-export const findControllerDecorator = (decorators: Decorator[]) =>
-  decorators.find(
-    (decorator) =>
-      isCallExpression(decorator.expression) &&
-      isIdentifier(decorator.expression.expression) &&
-      decorator.expression.expression.escapedText === 'Controller',
-  )
-
-export const isControllerClass = (declaration: ClassDeclaration) => {
-  if (!declaration.modifiers) {
-    return false
-  }
-
-  return Boolean(
-    findControllerDecorator(declaration.modifiers.filter(isDecorator)),
-  )
-}
-
-export const findMethodDecorator = (decorators: Decorator[]) =>
-  decorators.find(
-    (decorator) =>
-      isCallExpression(decorator.expression) &&
-      isIdentifier(decorator.expression.expression) &&
-      API_METHOD_DECORATOR_NAME.includes(
-        String(decorator.expression.expression.escapedText),
-      ),
-  )
-
-export const getControllerData = (controller: ClassDeclaration) => {
-  const controllerDecorator = findControllerDecorator(
-    controller.modifiers!.filter(isDecorator),
-  )
-  const controllerArgument =
-    controllerDecorator?.expression &&
-    isCallExpression(controllerDecorator.expression) &&
-    controllerDecorator.expression.arguments[0]
-
-  const controllerPath =
-    controllerArgument && isStringLiteral(controllerArgument)
-      ? controllerArgument.text
-      : ''
-
-  return { controllerPath }
-}
-
-const getDecoratorName = (decorator: Decorator) => {
-  return isCallExpression(decorator.expression) &&
-    isIdentifier(decorator.expression.expression) &&
-    decorator.expression.expression.escapedText
-    ? METHOD_TYPE_MAP[String(decorator.expression.expression.escapedText)]
-    : ''
-}
-
-export const getParameters = (parameters: NodeArray<ParameterDeclaration>) => {
-  const result: IParameterDeclaration[] = []
-
-  parameters.forEach((parameter, index) => {
-    const decorator = parameter.modifiers?.find(isDecorator)
-
-    if (!decorator || !METHODS.includes(getDecoratorName(decorator))) {
-      return
-    }
-
-    const decoratorName = getDecoratorName(decorator) as MethodType
-
-    const shouldGetParameter = decoratorName !== MethodType.Body
-
-    return result.push({
-      type: decoratorName,
-      name: isIdentifier(parameter.name) ? parameter.name.text : '',
-      parameterTypeIndex: shouldGetParameter
-        ? getDecoratorArguments(decorator, index)
-        : index,
-    })
-  })
-
-  return mergeParameters(result)
+  return path || ''
 }
 
 export const getDecoratorArguments = (decorator: Decorator, index: number) => {
-  const args = [
-    ...(isCallExpression(decorator.expression)
-      ? decorator.expression.arguments
-      : []),
-  ]
-  const [name] = args
+  const [name] = decorator.getArguments()
 
-  return isEmpty(args) || !isStringLiteral(name)
-    ? index
-    : { [name.text]: index }
+  return name ? { [(name as StringLiteral).getLiteralText()]: index } : index
+}
+
+export const getParameters = (parameters: ParameterDeclaration[]) => {
+  return mergeParameters(
+    parameters
+      .map((parameter, index) => {
+        const [decorator] = parameter.getDecorators()
+
+        if (!decorator || !METHODS.includes(decorator.getName())) {
+          return undefined
+        }
+
+        const decoratorName = decorator.getName() as MethodType
+        const shouldGetParameter = decoratorName !== MethodType.Body
+
+        return {
+          type: decoratorName,
+          name: parameter.getName(),
+          parameterTypeIndex: shouldGetParameter
+            ? getDecoratorArguments(decorator, index)
+            : index,
+        }
+      })
+      .filter(Boolean),
+  )
+}
+
+export const findControllerDecorator = (decorators: Decorator[]) =>
+  decorators.find((decorator) => decorator.getName() === 'Controller')
+
+export const isControllerClass = (declaration: ClassDeclaration) => {
+  if (declaration.getModifiers().length === 0) {
+    return false
+  }
+
+  return Boolean(findControllerDecorator(declaration.getDecorators()))
+}
+
+export const getControllerData = (controller: ClassDeclaration) => {
+  const decorator = findControllerDecorator(
+    controller.getDecorators(),
+  ) as Decorator
+  const [path] = decorator.getArguments()
+
+  if (!path) {
+    return { controllerPath: '' }
+  }
+
+  return { controllerPath: (path as StringLiteral).getLiteralText() }
 }
 
 export const mergeParameters = (
@@ -135,16 +96,4 @@ export const mergeParameters = (
   }
 
   return [body, mergedQuery, mergedParams]
-}
-
-function isEmpty(value: Record<string, unknown>): boolean
-function isEmpty(value: unknown[]): boolean
-function isEmpty(value: unknown) {
-  if (Array.isArray(value)) {
-    return value.length === 0
-  }
-
-  return typeof value === 'object' && value
-    ? Object.keys(value).length === 0
-    : false
 }

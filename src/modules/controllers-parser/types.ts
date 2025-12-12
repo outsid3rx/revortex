@@ -5,12 +5,6 @@ export enum MethodType {
   Return = 'Return',
 }
 
-export const METHOD_TYPE_MAP: Record<string, MethodType> = {
-  [MethodType.Body]: MethodType.Body,
-  [MethodType.Query]: MethodType.Query,
-  [MethodType.Param]: MethodType.Param,
-}
-
 export const METHODS = Object.values(MethodType)
 
 export interface IMethodDeclaration {

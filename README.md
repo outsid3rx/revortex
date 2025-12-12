@@ -1,5 +1,7 @@
 # revortex
 
+### [revortex in npm](https://www.npmjs.com/package/revortex?activeTab=readme)
+
 [Same page on russian.](docs/README.ru.md)
 
 Utility for automatic generation of API client from [Nest](https://nestjs.com/) project source code.
@@ -23,31 +25,47 @@ pnpm add revortex-wrapper
 
 ## Configuration and startup
 
-Create a `revortex.json` file in the root of the project and set the required fields:
+### Configuration via parameters
 
-### repo
+For running the application, you can use command line parameters that will override the values in the `revortex.json` configuration file.
+
+```shell
+pnpm exec revortex --out ./lib/ --alias ~server/ --mainPath ./src/main.ts --sourceDir src/ ../server/
+```
+
+### Configuration via file or package.json
+
+Create a `revortex.json` file in the root of the project or create `revortex` field in `package.json` file and set the required fields:
+
+#### repo
 
 Link to the root directory of the project's Nest repository, e.g. `../server/` if the server and client repositories are on the same level.
 
-### outDir.
+#### out
 
 A reference to the directory where the final client will be saved, e.g. `./lib/`.
 
-### importAliasSrcDir (optional)
+#### alias (optional)
 
 Path alias (if configured) to the `src` directory of the server side, will help set up more explicit and shorter imports. By default is built from `repo` and `sourceDir`, such as `../server/src/`.
 
-### sourceDir (optional)
+#### sourceDir (optional)
 
 If when building Nest application you have organized the location of modules differently from the starting template, you need to specify the path to the directory that contains the modules, relative to the root directory of the server part of the application. The default is `src/`.
+
+#### mainPath (optional)
+If the main file of the Nest application is located in a different place than the default `src/main.ts`, you need to specify the path to it relative to the root directory of the server part of the application.
+
+#### file (optional)
+If you want to specify output file name, you can use this parameter. By default, the file is named `index.ts`.
 
 A normal `revortex.json` file looks like this:
 
 ```json
 {
   "repo": "../server/",
-  "outDir": "./lib/",
-  "importAliasSrcDir": "~server/"
+  "out": "./lib/",
+  "alias": "~server/"
 }
 ```
 
@@ -84,11 +102,11 @@ Now we need to create an instance of `api` using the out-of-the-box utility and 
 
 ```typescript
 import ky from 'ky'
-import { apiCall } from 'revortex-wrapper'
+import { apiCall } from 'revortex/dist/wrapper'
 import { createApi } from '../lib'
 
 const api = createApi(ky, apiCall)
-await api.AppController.getHello({})
+await api.AppController.getHello()
 ```
 
 At this point, an instance of `ky` is needed to create the wrapper, since the wrapper itself is built on interaction with this package.

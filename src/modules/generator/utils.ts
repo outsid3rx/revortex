@@ -6,8 +6,6 @@ export const removeExtension = (filename: string) =>
 export const toPascalCase = (name: string) =>
   `${name.charAt(0).toUpperCase()}${name.slice(1)}`
 
-export const isNumber = (value: unknown) => typeof value === 'number'
-
 export const createApiWrapperParameters = (
   temporalType: string,
 ): IApiWrapperParameterEntry[] => [

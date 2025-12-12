@@ -8,7 +8,7 @@ export const BASE_IMPORTS: IImportEntry[] = [
   },
   {
     name: 'AbstractApiMethod',
-    from: 'vort_ex',
+    from: 'revortex',
     isType: true,
   },
 ]
@@ -54,5 +54,3 @@ export const FUNC_TOKENS = {
   API_CALL_WRAPPER: 'apiCallWrapper',
   ABSTRACT_API_METHOD: 'AbstractApiMethod',
 }
-
-export const NEW_LINE_TOKEN = '\n'
