@@ -4,7 +4,6 @@ import type { z } from 'zod'
 import { generateErrorMessage } from 'zod-error'
 import { Fs } from '../fs'
 import { logger } from '../logger'
-import { Parser } from '../parser'
 import {
   DEFAULT_CONFIG_PATH,
   DEFAULT_MAIN_PATH,
@@ -24,7 +23,6 @@ export { configSchema } from './schema'
 export class Config {
   private config!: ConfigDTO
   private mainFileConfig!: MainFileDTO
-  private parser = new Parser()
 
   constructor(private readonly mainPath = DEFAULT_MAIN_PATH) {}
 
@@ -101,7 +99,7 @@ export class Config {
   private async setupMainFile(mainFilePath: string) {
     const content = await Fs.read(mainFilePath)
 
-    const [node] = findGlobalPrefixNode(this.parser.setup(content).getNodes())
+    const [node] = findGlobalPrefixNode(content)
 
     if (!node) {
       logger.warn(`Not found globalPrefix in ${mainFilePath}`)
