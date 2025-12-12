@@ -1,3 +1,5 @@
+import { exec } from 'node:child_process'
+import { promisify } from 'node:util'
 import type { NodeArray, Statement } from 'typescript'
 import {
   isCallExpression,
@@ -5,6 +7,8 @@ import {
   isFunctionDeclaration,
   isPropertyAccessExpression,
 } from 'typescript'
+
+export const execAsync = promisify(exec)
 
 export const findGlobalPrefixNode = (nodes: NodeArray<Statement>) =>
   nodes
