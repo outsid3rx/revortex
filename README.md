@@ -33,9 +33,9 @@ For running the application, you can use command line parameters that will overr
 pnpm exec revortex --out ./lib/ --alias ~server/ --mainPath ./src/main.ts --sourceDir src/ ../server/
 ```
 
-### Configuration via file
+### Configuration via file or package.json
 
-Create a `revortex.json` file in the root of the project and set the required fields:
+Create a `revortex.json` file in the root of the project or create `revortex` field in `package.json` file and set the required fields:
 
 #### repo
 
@@ -52,6 +52,12 @@ Path alias (if configured) to the `src` directory of the server side, will help 
 #### sourceDir (optional)
 
 If when building Nest application you have organized the location of modules differently from the starting template, you need to specify the path to the directory that contains the modules, relative to the root directory of the server part of the application. The default is `src/`.
+
+#### mainPath (optional)
+If the main file of the Nest application is located in a different place than the default `src/main.ts`, you need to specify the path to it relative to the root directory of the server part of the application.
+
+#### file (optional)
+If you want to specify output file name, you can use this parameter. By default, the file is named `index.ts`.
 
 A normal `revortex.json` file looks like this:
 
