@@ -3,7 +3,7 @@
 import { join } from 'node:path'
 import { Command } from 'commander'
 import type { z } from 'zod'
-import packageJson from '../package.json'
+import { version } from '../package.json'
 import { OUT_FILE_NAME } from './constants'
 import type { configSchema } from './modules/config'
 import { Config } from './modules/config'
@@ -16,9 +16,9 @@ export * from './modules/types'
 const program = new Command()
 
 program
-  .name('vort_ex')
+  .name('revortex')
   .description('Generate REST API for frontend projects from Nest controllers')
-  .version(packageJson.version)
+  .version(version)
   .option('-o, --out <string>', 'Output directory for generated file')
   .option('-f, --file <string>', 'Output file name')
   .option('-a, --alias <string>', 'Import alias for imported files')
@@ -42,7 +42,7 @@ const main = async () => {
   const { repo, sourceDir } = config.get()
 
   const generator = new Generator(
-    config.get().alias || repo + sourceDir,
+    config.get().alias || join(repo, sourceDir),
     config.get().globalPrefix,
   )
 
