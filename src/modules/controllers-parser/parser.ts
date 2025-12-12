@@ -1,3 +1,4 @@
+import { join } from 'node:path'
 import { isEmpty } from 'es-toolkit/compat'
 import { Project, type StringLiteral } from 'ts-morph'
 import { logger } from '../logger'
@@ -56,7 +57,7 @@ export class ControllersParser {
                 (pathExpression as StringLiteral)?.getLiteralText() || ''
 
               return {
-                path: controllerPath + path,
+                path: join(controllerPath, path),
                 name: method.getName(),
                 method: methodName,
                 params,

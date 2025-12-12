@@ -1,3 +1,4 @@
+import { join } from 'node:path'
 import { Project } from 'ts-morph'
 import {
   createPrinter,
@@ -9,7 +10,6 @@ import {
   ScriptTarget,
   SyntaxKind,
 } from 'typescript'
-
 import type {
   ControllersData,
   IParameterDeclaration,
@@ -183,7 +183,7 @@ export class Generator {
                             factory.createPropertyAssignment(
                               TOKENS.URL,
                               factory.createStringLiteral(
-                                this.globalPrefix + member.path,
+                                join(this.globalPrefix, member.path),
                               ),
                             ),
                             factory.createPropertyAssignment(
