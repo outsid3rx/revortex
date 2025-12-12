@@ -53,7 +53,7 @@ export class Generator {
         ...BASE_IMPORTS,
         ...controllers.map(({ name, fileName }) => ({
           from: this.importAliasSrcDir + removeExtension(fileName),
-          isType: false,
+          isType: true,
           name,
         })),
       ].map(({ name, from, isType }) => ({
