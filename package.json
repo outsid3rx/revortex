@@ -23,6 +23,7 @@
   "license": "MIT",
   "description": "Generate REST API for frontend projects from Nest controllers",
   "dependencies": {
+    "@phenomnomnominal/tsquery": "^6.1.4",
     "commander": "^12.1.0",
     "es-toolkit": "^1.39.10",
     "ts-morph": "^26.0.0",
